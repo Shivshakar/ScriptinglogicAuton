@@ -1,0 +1,14 @@
+version: '3'
+services:
+  selenium-standalone:
+    image: selenium/standalone-chrome:4.10.0-20240117
+    container_name: selenium-standalone-chrome
+    ports:
+      - "4444:4444"
+    volumes:
+      - /dev/shm:/dev/shm
+    shm_size: '2gb'
+    environment:
+      - SE_NODE_MAX_SESSIONS=5
+      - SE_NODE_OVERRIDE_MAX_SESSIONS=true
+
