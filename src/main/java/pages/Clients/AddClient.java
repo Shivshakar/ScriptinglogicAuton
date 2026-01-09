@@ -1,108 +1,143 @@
 package pages.Clients;
 
-import org.checkerframework.checker.units.qual.C;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
 
 
 public class AddClient {
-    @FindBy(xpath = "//input[@id='client_name']")
+    // Preferred id locators where possible — faster and more robust than XPath for simple id lookups
+    @FindBy(id = "client_name")
     WebElement clientName;
 
-    @FindBy (xpath = "//input[@id='client_surname']")
+    @FindBy(id = "client_surname")
     WebElement clientSurname;
 
-    @FindBy (xpath = "//input[@id='client_address_1']")
+    @FindBy(id = "client_address_1")
     WebElement streetAddress1;
 
-    @FindBy (xpath = "//input[@id='client_address_2']")
+    @FindBy(id = "client_address_2")
     WebElement streetAddress2;
 
-    @FindBy (xpath = "//input[@id='client_city']")
+    @FindBy(id = "client_city")
     WebElement city;
 
-    @FindBy (xpath = "//input[@id='client_state']")
+    @FindBy(id = "client_state")
     WebElement state;
 
-    @FindBy (xpath = "//input[@id='client_zip']")
+    @FindBy(id = "client_zip")
     WebElement zipCode;
 
-    @FindBy (xpath = "//input[@id='client_phone']")
+    @FindBy(id = "client_phone")
     WebElement phoneNumber;
 
-    @FindBy (xpath = "//input[@id='client_fax']")
+    @FindBy(id = "client_fax")
     WebElement faxNumber;
 
-    @FindBy (xpath = "//input[@id='client_mobile']")
+    @FindBy(id = "client_mobile")
     WebElement mobileNumber;
 
-    @FindBy (xpath = "//input[@id='client_email']")
+    @FindBy(id = "client_email")
     WebElement emailAddress;
 
-    @FindBy (xpath = "//input[@id='client_web']")
+    @FindBy(id = "client_web")
     WebElement webAddress;
 
-    @FindBy (xpath = "//input[@id='client_vat_id']")
+    @FindBy(id = "client_vat_id")
     WebElement vATID;
 
-    @FindBy (xpath = "//input[@id='client_tax_code']")
+    @FindBy(id = "client_tax_code")
     WebElement taxesCode;
 
-    @FindBy (xpath = "//button[@id='btn-submit']")
+    @FindBy(id = "btn-submit")
     WebElement save;
 
-    @FindBy (xpath = "//span[@id='select2-client_language-container']")
+    // select2 uses an inline container; selecting by id is okay here
+    @FindBy(id = "select2-client_language-container")
     WebElement languageContainer;
 
-    @FindBy (xpath = "//input[@role='searchbox']")
+    // generic searchbox used by select2 dropdowns — we will wait for visibility before using it
+    @FindBy(css = "input[role='searchbox']")
     WebElement searchBox;
 
 
     WebDriver driver;
 
+    // Helper wait instance (short-lived per method to avoid global state)
+    private WebDriverWait getWait() {
+        return new WebDriverWait(driver, Duration.ofSeconds(5));
+    }
+
+    /**
+     * Select language from select2 control. This method will:
+     * - click the container to open the dropdown
+     * - wait for the search box to be visible
+     * - type the language and click the matching result
+     * Using explicit waits makes interaction more reliable on slower CI agents.
+     */
     public void setLanguage(String language)
     {
         languageContainer.click();
+        // wait until search box appears and is usable
+        getWait().until(ExpectedConditions.visibilityOf(searchBox));
+        searchBox.clear();
         searchBox.sendKeys(language);
-        driver.findElement(By.xpath("//li[normalize-space()='"+language+"']")).click();
+        // wait for the specific option to appear and click it
+        By option = By.xpath("//li[normalize-space()='"+language+"']");
+        getWait().until(ExpectedConditions.elementToBeClickable(option));
+        driver.findElement(option).click();
     }
 
-    @FindBy (xpath = "//span[@id='select2-client_country-container']")
+    @FindBy(id = "select2-client_country-container")
     WebElement countryContainer;
 
+    /**
+     * Select country from select2 control.
+     */
     public void setCountry(String country)
     {
         countryContainer.click();
+        getWait().until(ExpectedConditions.visibilityOf(searchBox));
+        searchBox.clear();
         searchBox.sendKeys(country);
-        driver.findElement(By.xpath("//li[normalize-space()='"+country+"']")).click();
+        By option = By.xpath("//li[normalize-space()='"+country+"']");
+        getWait().until(ExpectedConditions.elementToBeClickable(option));
+        driver.findElement(option).click();
     }
 
-    @FindBy (xpath = "//span[@id='select2-client_gender-container']")
+    @FindBy(id = "select2-client_gender-container")
     WebElement genderContainer;
 
+    /**
+     * Select gender from select2 control.
+     */
     public void setGender(String gender)
     {
         genderContainer.click();
-        driver.findElement(By.xpath("//li[normalize-space()='"+gender+"']")).click();
+        By option = By.xpath("//li[normalize-space()='"+gender+"']");
+        getWait().until(ExpectedConditions.elementToBeClickable(option));
+        driver.findElement(option).click();
     }
 
-    @FindBy (xpath = "//input[@id='client_birthdate']")
+    @FindBy(id = "client_birthdate")
     WebElement birthdate;
 
+    /**
+     * Set birth date. Some datepicker widgets don't accept sendKeys or require events to be fired
+     * so we set the value via JS and dispatch a change event to ensure the application picks it up.
+     */
     public void setBirthDate(String bDate)
     {
         JavascriptExecutor js = (JavascriptExecutor) driver;
-       // js.executeScript("arguments[0].click()",bDate);
-
-      //  js.executeScript("window.scrollBy(0,600)");
-
-      js.executeScript("arguments[0].setAttribute('value','"+bDate+"')",birthdate);
-       // birthdate.sendKeys(bDate);
+        // Set the value and dispatch a native 'change' event so listeners notice the update
+        js.executeScript("arguments[0].value = '" + bDate + "'; arguments[0].dispatchEvent(new Event('change'));", birthdate);
     }
 
 

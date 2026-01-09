@@ -9,7 +9,7 @@ public class AddClientTest extends DoLogin {
 
     @Test
     public void addClientTest() {
-        // Use DriverFactory.getDriver() to obtain the driver instance instead of the raw 'driver' field
+
         Menu menu = new Menu(getDriver());
         menu.clickOnAddClient();
 

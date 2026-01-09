@@ -10,6 +10,7 @@ import util.DoLogin;
 
 import java.io.IOException;
 
+import static base.TestBase.getDriver;
 import static utility.ForDataProvider.getMyData;
 
 public class AddClientDataProviderTest extends DoLogin {

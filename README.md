@@ -1,9 +1,5 @@
-ScriptinglogicAuton — README (Project Guide)
+ScriptinglogicAuton — README
 
-Purpose
-- This README gives a compact, customer-facing overview of the project, how to run it, what important files exist (including the helper skeletons), and quick troubleshooting / usage notes.
-
-Quick plan (what I added to the repo)
 - New helpers: `utility.DriverFactory`, `utility.WaitUtils`, `utility.ElementActions`, `utility.TestListener` and `test.base.TestBase`.
 - Migrated `regression.LoginTest` to use `TestBase` and read credentials from `config/config.properties`.
 - Updated `OpenURL` to delegate driver creation to `DriverFactory` (keeps backward compatibility).
@@ -59,8 +55,6 @@ mvn -Dtest=regression.LoginTest test
 
 Configuration
 - `config/config.properties` contains environment values.
-
-- Best practice: do not store production credentials in the repo; prefer environment variables or CI secrets and have `ConfigReader` prefer env vars.
 
 Key helpers — what they are and usage
 - DriverFactory (ThreadLocal):

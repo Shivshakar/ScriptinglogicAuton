@@ -1,10 +1,11 @@
 package regression;
 
+import base.TestBase;
 import org.testng.annotations.Test;
 import pages.ForgotPassword;
 import pages.Login;
 
-public class ForgotPasswordTest extends base.TestBase {
+public class ForgotPasswordTest extends TestBase {
 
     @Test
     public void forgotPasswordTest()
